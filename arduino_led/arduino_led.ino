@@ -9,7 +9,7 @@ const int SINE_FREQ = 500;
 const int SAMPLES_PER_CYCLE = 64;    
 const int TIMER_FREQ = SINE_FREQ * SAMPLES_PER_CYCLE; 
 
-const std::vector<int> message = {0,0,0,0,0,1};
+const std::vector<int> message = {1};
 int length;
 
 volatile int messageIndex = 0;
