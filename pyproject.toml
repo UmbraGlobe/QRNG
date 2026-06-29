@@ -1,0 +1,15 @@
+[project]
+name = "qrng"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "ipykernel>=7.3.0",
+    "matplotlib>=3.11.0",
+    "pandas>=3.0.3",
+    "pyqt6>=6.11.0",
+    "pyqtgraph>=0.14.0",
+    "pyserial>=3.5",
+    "scipy>=1.17.1",
+]
