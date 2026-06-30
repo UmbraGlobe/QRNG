@@ -4,8 +4,6 @@
 FspTimer fsp_timer;
 
 volatile bool dataReady = false;
-volatile uint16_t buf[4];
-volatile unsigned long t;
 
 const int PAYLOAD_SAMPLES = 50;
 
@@ -29,7 +27,6 @@ volatile DataPayload* volatile sendBuf = nullptr;
 unsigned int sampleIndex = 0;
 
 static void timerCallback(timer_callback_args_t *p_args) {
-  t = micros();
   fillBuf->packets[sampleIndex].timestamp = micros();
   fillBuf->packets[sampleIndex].channels[0] = analogRead(A0);
   fillBuf->packets[sampleIndex].channels[1] = analogRead(A1);
