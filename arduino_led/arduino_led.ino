@@ -6,7 +6,7 @@
 FspTimer fsp_timer;
 
 const int PIN = A0;                 
-const int SINE_FREQ = 500;          
+const int SINE_FREQ = 287;          
 
 analogWave wave(DAC);
 
