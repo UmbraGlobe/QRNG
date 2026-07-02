@@ -1,0 +1,71 @@
+A_i is the demodulated message of sensor i (LED FLUCTUATION + CIRCUIT NOISE + INTERFERENCE...)
+a_i is the mean carrier amplitude of sensor i
+Cov(A_i, A_j) = a_i * a_j * Var(m)  ->  Var(m) = Cov(A_i, A_j) / (a_i * a_j)
+Var(n_i) = Var(A_i) - a_i^2 * Var(m)  (independent per-diode noise)
+
+Across 2 sensors over 2 independent windows, Fs = 1499.25 Hz
+
+================================================================
+TRIAL t1
+================================================================
+
+[1] COVARIANCE (mV^2) - diagonal = total fluctuations of each channel, off-diagonal = fluctuation shared between two channels
+               BPW34_1     BPW34_2
+   BPW34_1      0.0085      0.0156
+   BPW34_2      0.0156      0.0395
+
+[2] CORRELATION (-1 to 1)-  near 1 = channels track togther (shared LED), 0 = independent
+               BPW34_1     BPW34_2
+   BPW34_1      1.0000      0.8541
+   BPW34_2      0.8541      1.0000
+
+[3] NORMALIZED COVARIANCE - off-diagonals = var(m) estimate per pair; all equal => one shared LED fluctuation
+               BPW34_1     BPW34_2
+   BPW34_1  6.1547e-02  5.4909e-02
+   BPW34_2  5.4909e-02  6.7147e-02
+
+var(m) = 5.4909e-02   RMS(m) = sqrt(var(m)) = 0.2343   (mean over 1 coupled pair(s), corr > 0.5)
+
+   channel  a_i (mV)    Var(A_i)  a^2*Var(m)    Var(n_i)  % indep  coupled
+   BPW34_1     0.371      0.0085      0.0076      0.0009    10.8%      yes
+   BPW34_2     0.767      0.0395      0.0323      0.0072    18.2%      yes
+  Var(n_i) is only trustworthy for coupled channels; a decoupled channel breaks the a_i^2*Var(m) split.
+
+================================================================
+TRIAL t2
+================================================================
+
+[1] COVARIANCE (mV^2) - diagonal = total fluctuations of each channel, off-diagonal = fluctuation shared between two channels
+               BPW34_1     BPW34_2
+   BPW34_1      0.0131      0.0182
+   BPW34_2      0.0182      0.0312
+
+[2] CORRELATION (-1 to 1)-  near 1 = channels track togther (shared LED), 0 = independent
+               BPW34_1     BPW34_2
+   BPW34_1      1.0000      0.9016
+   BPW34_2      0.9016      1.0000
+
+[3] NORMALIZED COVARIANCE - off-diagonals = var(m) estimate per pair; all equal => one shared LED fluctuation
+               BPW34_1     BPW34_2
+   BPW34_1  9.5607e-02  6.1064e-02
+   BPW34_2  6.1064e-02  4.7974e-02
+
+var(m) = 6.1064e-02   RMS(m) = sqrt(var(m)) = 0.2471   (mean over 1 coupled pair(s), corr > 0.5)
+
+   channel  a_i (mV)    Var(A_i)  a^2*Var(m)    Var(n_i)  % indep  coupled
+   BPW34_1     0.370      0.0131      0.0084      0.0047    36.1%      yes
+   BPW34_2     0.807      0.0312      0.0397      0.0000     0.0%      yes
+  Var(n_i)=0 (clamped): a_i^2*Var(m) >= Var(A_i), i.e. ~100% common mode; private noise is below this method's resolution.
+  Var(n_i) is only trustworthy for coupled channels; a decoupled channel breaks the a_i^2*Var(m) split.
+
+E[RMS(m)] over 2 trial(s) = 0.2408  (fractional LED intensity fluctuation)
+
+================================================================
+INTERPRETATION
+================================================================
+Model:  A_i(t) = a_i + a_i*m(t) + n_i(t)     (demodulated envelope of diode i)
+  a_i    = mean carrier amplitude, optical power reaching diode i
+  m(t)   = LED intensity fluctuation, SHARED by every diode (E[m]=0)
+  n_i(t) = independent per-diode noise (shot/thermal) left inside the band
+
+

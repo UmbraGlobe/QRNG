@@ -1,0 +1,222 @@
+A_i is the demodulated message of sensor i (LED FLUCTUATION + CIRCUIT NOISE + INTERFERENCE...)
+a_i is the mean carrier amplitude of sensor i
+Cov(A_i, A_j) = a_i * a_j * Var(m)  ->  Var(m) = Cov(A_i, A_j) / (a_i * a_j)
+Var(n_i) = Var(A_i) - a_i^2 * Var(m)  (independent per-diode noise)
+
+Across 4 sensors over 6 independent windows, Fs = 1499.25 Hz
+
+================================================================
+TRIAL t1
+================================================================
+
+[1] COVARIANCE (mV^2) - diagonal = total fluctuations of each channel, off-diagonal = fluctuation shared between two channels
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1      5.4247      4.3056      0.5979     -0.0345
+   BPW34_2      4.3056      3.6116      0.6159     -0.0012
+   Inano_1      0.5979      0.6159      0.2167      0.0094
+   Inano_2     -0.0345     -0.0012      0.0094      0.0885
+
+[2] CORRELATION (-1 to 1)-  near 1 = channels track togther (shared LED), 0 = independent
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1      1.0000      0.9727      0.5514     -0.0498
+   BPW34_2      0.9727      1.0000      0.6961     -0.0021
+   Inano_1      0.5514      0.6961      1.0000      0.0678
+   Inano_2     -0.0498     -0.0021      0.0678      1.0000
+
+[3] NORMALIZED COVARIANCE - off-diagonals = var(m) estimate per pair; all equal => one shared LED fluctuation
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1  6.5682e-02  6.6761e-02  7.6223e-02 -5.9074e-03
+   BPW34_2  6.6761e-02  7.1715e-02  1.0055e-01 -2.6543e-04
+   Inano_1  7.6223e-02  1.0055e-01  2.9096e-01  1.6916e-02
+   Inano_2 -5.9074e-03 -2.6543e-04  1.6916e-02  2.1398e-01
+
+var(m) (mean over 3 coupled pairs, corr>0.5) = 8.1177e-02   RMS = 0.2849
+
+   channel   Var(A) mV^2   Var(n) mV^2   % noise  coupled
+   BPW34_1        5.4247        0.0000      0.0%      yes
+   BPW34_2        3.6116        0.0000      0.0%      yes
+   Inano_1        0.2167        0.1563     72.1%      yes
+   Inano_2        0.0885        0.0549     62.1%       NO
+decoupled channel: a_i^2*var(m) assumption breaks, % noise unreliable
+Var(n)=0.0 clamped: a_i^2*var(m) >= Var(A_i) (~100% common mode), independent noise below method resolution (~0)
+
+================================================================
+TRIAL t2
+================================================================
+
+[1] COVARIANCE (mV^2) - diagonal = total fluctuations of each channel, off-diagonal = fluctuation shared between two channels
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1      6.5465      4.9120      0.6310     -0.2285
+   BPW34_2      4.9120      4.0181      0.5450     -0.1959
+   Inano_1      0.6310      0.5450      0.1299      0.0167
+   Inano_2     -0.2285     -0.1959      0.0167      0.0900
+
+[2] CORRELATION (-1 to 1)-  near 1 = channels track togther (shared LED), 0 = independent
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1      1.0000      0.9577      0.6843     -0.2976
+   BPW34_2      0.9577      1.0000      0.7545     -0.3258
+   Inano_1      0.6843      0.7545      1.0000      0.1547
+   Inano_2     -0.2976     -0.3258      0.1547      1.0000
+
+[3] NORMALIZED COVARIANCE - off-diagonals = var(m) estimate per pair; all equal => one shared LED fluctuation
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1  8.0578e-02  7.8407e-02  7.0405e-02 -3.5569e-02
+   BPW34_2  7.8407e-02  8.3177e-02  7.8864e-02 -3.9556e-02
+   Inano_1  7.0405e-02  7.8864e-02  1.3136e-01  2.3602e-02
+   Inano_2 -3.5569e-02 -3.9556e-02  2.3602e-02  1.7724e-01
+
+var(m) (mean over 3 coupled pairs, corr>0.5) = 7.5892e-02   RMS = 0.2755
+
+   channel   Var(A) mV^2   Var(n) mV^2   % noise  coupled
+   BPW34_1        6.5465        0.3807      5.8%      yes
+   BPW34_2        4.0181        0.3519      8.8%      yes
+   Inano_1        0.1299        0.0548     42.2%      yes
+   Inano_2        0.0900        0.0515     57.2%       NO
+decoupled channel: a_i^2*var(m) assumption breaks, % noise unreliable
+
+================================================================
+TRIAL t3
+================================================================
+
+[1] COVARIANCE (mV^2) - diagonal = total fluctuations of each channel, off-diagonal = fluctuation shared between two channels
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1      5.9917      4.2461      0.5911      0.0354
+   BPW34_2      4.2461      3.2137      0.4937      0.0217
+   Inano_1      0.5911      0.4937      0.1420      0.0282
+   Inano_2      0.0354      0.0217      0.0282      0.0854
+
+[2] CORRELATION (-1 to 1)-  near 1 = channels track togther (shared LED), 0 = independent
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1      1.0000      0.9677      0.6408      0.0494
+   BPW34_2      0.9677      1.0000      0.7307      0.0414
+   Inano_1      0.6408      0.7307      1.0000      0.2561
+   Inano_2      0.0494      0.0414      0.2561      1.0000
+
+[3] NORMALIZED COVARIANCE - off-diagonals = var(m) estimate per pair; all equal => one shared LED fluctuation
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1  7.4651e-02  6.7312e-02  8.6486e-02  6.6829e-03
+   BPW34_2  6.7312e-02  6.4819e-02  9.1900e-02  5.2166e-03
+   Inano_1  8.6486e-02  9.1900e-02  2.4403e-01  6.2590e-02
+   Inano_2  6.6829e-03  5.2166e-03  6.2590e-02  2.4476e-01
+
+var(m) (mean over 3 coupled pairs, corr>0.5) = 8.1899e-02   RMS = 0.2862
+
+   channel   Var(A) mV^2   Var(n) mV^2   % noise  coupled
+   BPW34_1        5.9917        0.0000      0.0%      yes
+   BPW34_2        3.2137        0.0000      0.0%      yes
+   Inano_1        0.1420        0.0944     66.4%      yes
+   Inano_2        0.0854        0.0568     66.5%       NO
+decoupled channel: a_i^2*var(m) assumption breaks, % noise unreliable
+Var(n)=0.0 clamped: a_i^2*var(m) >= Var(A_i) (~100% common mode), independent noise below method resolution (~0)
+
+================================================================
+TRIAL t4
+================================================================
+
+[1] COVARIANCE (mV^2) - diagonal = total fluctuations of each channel, off-diagonal = fluctuation shared between two channels
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1      5.7618      4.3134      0.5016     -0.1171
+   BPW34_2      4.3134      3.4376      0.4780     -0.0717
+   Inano_1      0.5016      0.4780      0.1426      0.0207
+   Inano_2     -0.1171     -0.0717      0.0207      0.0738
+
+[2] CORRELATION (-1 to 1)-  near 1 = channels track togther (shared LED), 0 = independent
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1      1.0000      0.9692      0.5534     -0.1796
+   BPW34_2      0.9692      1.0000      0.6828     -0.1424
+   Inano_1      0.5534      0.6828      1.0000      0.2018
+   Inano_2     -0.1796     -0.1424      0.2018      1.0000
+
+[3] NORMALIZED COVARIANCE - off-diagonals = var(m) estimate per pair; all equal => one shared LED fluctuation
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1  7.0692e-02  6.7951e-02  6.3652e-02 -2.0933e-02
+   BPW34_2  6.7951e-02  6.9535e-02  7.7887e-02 -1.6457e-02
+   Inano_1  6.3652e-02  7.7887e-02  1.8715e-01  3.8275e-02
+   Inano_2 -2.0933e-02 -1.6457e-02  3.8275e-02  1.9218e-01
+
+var(m) (mean over 3 coupled pairs, corr>0.5) = 6.9830e-02   RMS = 0.2643
+
+   channel   Var(A) mV^2   Var(n) mV^2   % noise  coupled
+   BPW34_1        5.7618        0.0702      1.2%      yes
+   BPW34_2        3.4376        0.0000      0.0%      yes
+   Inano_1        0.1426        0.0894     62.7%      yes
+   Inano_2        0.0738        0.0470     63.7%       NO
+decoupled channel: a_i^2*var(m) assumption breaks, % noise unreliable
+Var(n)=0.0 clamped: a_i^2*var(m) >= Var(A_i) (~100% common mode), independent noise below method resolution (~0)
+
+================================================================
+TRIAL t5
+================================================================
+
+[1] COVARIANCE (mV^2) - diagonal = total fluctuations of each channel, off-diagonal = fluctuation shared between two channels
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1      6.4368      4.8536      0.5484      0.0082
+   BPW34_2      4.8536      3.8185      0.5133      0.0216
+   Inano_1      0.5484      0.5133      0.1616      0.0321
+   Inano_2      0.0082      0.0216      0.0321      0.0918
+
+[2] CORRELATION (-1 to 1)-  near 1 = channels track togther (shared LED), 0 = independent
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1      1.0000      0.9790      0.5377      0.0106
+   BPW34_2      0.9790      1.0000      0.6534      0.0366
+   Inano_1      0.5377      0.6534      1.0000      0.2633
+   Inano_2      0.0106      0.0366      0.2633      1.0000
+
+[3] NORMALIZED COVARIANCE - off-diagonals = var(m) estimate per pair; all equal => one shared LED fluctuation
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1  8.4325e-02  8.0945e-02  7.7157e-02  1.3806e-03
+   BPW34_2  8.0945e-02  8.1071e-02  9.1927e-02  4.6671e-03
+   Inano_1  7.7157e-02  9.1927e-02  2.4416e-01  5.8329e-02
+   Inano_2  1.3806e-03  4.6671e-03  5.8329e-02  2.0092e-01
+
+var(m) (mean over 3 coupled pairs, corr>0.5) = 8.3343e-02   RMS = 0.2887
+
+   channel   Var(A) mV^2   Var(n) mV^2   % noise  coupled
+   BPW34_1        6.4368        0.0750      1.2%      yes
+   BPW34_2        3.8185        0.0000      0.0%      yes
+   Inano_1        0.1616        0.1064     65.9%      yes
+   Inano_2        0.0918        0.0537     58.5%       NO
+decoupled channel: a_i^2*var(m) assumption breaks, % noise unreliable
+Var(n)=0.0 clamped: a_i^2*var(m) >= Var(A_i) (~100% common mode), independent noise below method resolution (~0)
+
+================================================================
+TRIAL t6
+================================================================
+
+[1] COVARIANCE (mV^2) - diagonal = total fluctuations of each channel, off-diagonal = fluctuation shared between two channels
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1      5.7181      4.3021      0.4623     -0.3359
+   BPW34_2      4.3021      3.4365      0.4560     -0.2303
+   Inano_1      0.4623      0.4560      0.1213     -0.0038
+   Inano_2     -0.3359     -0.2303     -0.0038      0.0819
+
+[2] CORRELATION (-1 to 1)-  near 1 = channels track togther (shared LED), 0 = independent
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1      1.0000      0.9705      0.5550     -0.4909
+   BPW34_2      0.9705      1.0000      0.7062     -0.4343
+   Inano_1      0.5550      0.7062      1.0000     -0.0381
+   Inano_2     -0.4909     -0.4343     -0.0381      1.0000
+
+[3] NORMALIZED COVARIANCE - off-diagonals = var(m) estimate per pair; all equal => one shared LED fluctuation
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1  7.1273e-02  6.8140e-02  6.0387e-02 -6.4327e-02
+   BPW34_2  6.8140e-02  6.9165e-02  7.5689e-02 -5.6060e-02
+   Inano_1  6.0387e-02  7.5689e-02  1.6608e-01 -7.6246e-03
+   Inano_2 -6.4327e-02 -5.6060e-02 -7.6246e-03  2.4095e-01
+
+var(m) (mean over 3 coupled pairs, corr>0.5) = 6.8072e-02   RMS = 0.2609
+
+   channel   Var(A) mV^2   Var(n) mV^2   % noise  coupled
+   BPW34_1        5.7181        0.2568      4.5%      yes
+   BPW34_2        3.4365        0.0543      1.6%      yes
+   Inano_1        0.1213        0.0716     59.0%      yes
+   Inano_2        0.0819        0.0587     71.7%       NO
+decoupled channel: a_i^2*var(m) assumption breaks, % noise unreliable
+
+================================================================
+ACROSS-TRIAL SUMMARY
+================================================================
+var(m) per trial: 8.1177e-02, 7.5892e-02, 8.1899e-02, 6.9830e-02, 8.3343e-02, 6.8072e-02
+E[var(m)] = 7.6702e-02 mV^2/mV^2, std = 6.5346e-03, spread (CV) = 8.5%
+E[RMS(m)] = 0.2770  (fractional LED intensity fluctuation)
+
