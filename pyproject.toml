@@ -7,6 +7,7 @@ requires-python = ">=3.11"
 dependencies = [
     "ipykernel>=7.3.0",
     "matplotlib>=3.11.0",
+    "padasip>=1.2.2",
     "pandas>=3.0.3",
     "pyqt6>=6.11.0",
     "pyqtgraph>=0.14.0",

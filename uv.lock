@@ -749,6 +749,16 @@ wheels = [
 ]
 
 [[package]]
+name = "padasip"
+version = "1.2.2"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "numpy", version = "2.4.6", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "numpy", version = "2.5.0", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/b0/e1/645af9917ed93c1c3a7bc39f708ae777c8756bca3250a15dfee603d2d311/padasip-1.2.2.tar.gz", hash = "sha256:714e198f2b4d9a3761e7fe92f70e3007356ae676e5f19c4b3a93c11616787907", size = 28567, upload-time = "2022-08-05T07:03:35.931Z" }
+
+[[package]]
 name = "pandas"
 version = "3.0.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1168,6 +1178,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "ipykernel" },
     { name = "matplotlib" },
+    { name = "padasip" },
     { name = "pandas" },
     { name = "pyqt6" },
     { name = "pyqtgraph" },
@@ -1180,6 +1191,7 @@ dependencies = [
 requires-dist = [
     { name = "ipykernel", specifier = ">=7.3.0" },
     { name = "matplotlib", specifier = ">=3.11.0" },
+    { name = "padasip", specifier = ">=1.2.2" },
     { name = "pandas", specifier = ">=3.0.3" },
     { name = "pyqt6", specifier = ">=6.11.0" },
     { name = "pyqtgraph", specifier = ">=0.14.0" },
