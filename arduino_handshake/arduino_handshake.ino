@@ -45,26 +45,34 @@ static void timerCallback(timer_callback_args_t* p_args) {
   }
 }
 
-analogWave wave(DAC);
-const int SINE_FREQ = 287; 
-const int LED_PIN = A0;
+#define SAMPLE_COUNT 32
 
+const int MAX_VOLTAGE = 1.4;
+const int MIN_VOLTAGE = 0.6;
+const int SYSTEM_VOLTAGE = 5;
+
+const int DAC_RESOLUTION = 65535;
+const int VAL_HIGH = (MAX_VOLTAGE * DAC_RESOLUTION) / SYSTEM_VOLTAGE;
+const int VAL_LOW  = (MIN_VOLTAGE * DAC_RESOLUTION) / SYSTEM_VOLTAGE;
+
+const int centerOffset = (VAL_HIGH + VAL_LOW) / 2;
+const int amplitude = (VAL_HIGH - VAL_LOW) / 2;
+const int SINE_FREQ = 930; 
+
+uint16_t offsetSin[SAMPLE_COUNT];
+
+analogWave wave(DAC, offsetSin, SAMPLE_COUNT, 0);
 
 void setup() {
   Serial.begin(921600);
-  pinMode(LED_PIN, OUTPUT);
-  wave.sine(SINE_FREQ);
+  pinMode(DAC, OUTPUT);
 
+  for (int i = 0; i < SAMPLE_COUNT; i++) {
+    offsetSin[i] = (uint16_t)(centerOffset + (amplitude * sin(2.0 * PI * i / SAMPLE_COUNT)));
+  }
+
+  wave.begin(SINE_FREQ);
   analogReadResolution(14);
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, LOW);
-
-
-  const int PIN = A0;                 
-  const int SINE_FREQ = 287;          
-
-
-
 
   //set header bytes: AA BB
   bufA.header = 0xBBAA;
@@ -73,16 +81,22 @@ void setup() {
   int8_t channel = FspTimer::get_available_timer(type);
   if (channel < 0) return;
   //setup timer
-  fsp_timer.begin(TIMER_MODE_PERIODIC, type, channel, 1500, 50.0, timerCallback, nullptr);
+  fsp_timer.begin(TIMER_MODE_PERIODIC, type, channel, 2500, 50.0, timerCallback, nullptr);
   fsp_timer.setup_overflow_irq();
   fsp_timer.open();
   fsp_timer.start();
 }
 
+int count = 0;
+
 void loop() {
   if (dataReady) {
-
+    count++;
     Serial.write((uint8_t*)sendBuf, sizeof(DataPayload));
     dataReady = false;
+    if (count % 100 == 0)
+    {
+      //wave.freq(SINE_FREQ+count/10);
+    }
   }
 }
