@@ -1,0 +1,34 @@
+====================================================================
+ NOISE FLOOR  —  the noise each photodiode adds on its own
+====================================================================
+Extra electronic/pickup noise per channel, measured only where no
+carrier or interference lives, then scaled to the analysis band.
+This is the floor the surface-fingerprint signal has to rise above.
+
+Record : 150000 samples (30 s)   Fs = 5000 Hz   carrier = 930.5 Hz
+Scaled : to the 4 Hz demod window (same band the cross-sensor cell uses)
+
+  sensor     noise(uV)    Var(n) mV^2  vs quietest   consistency
+  ------------------------------------------------------------
+  BPW34_1         28.4       8.06e-04        1.0x    consistent
+  BPW34_2         52.4       2.75e-03        3.4x    consistent
+  Inano_1         86.2       7.43e-03        9.2x       varies*
+  Inano_2         49.8       2.48e-03        3.1x    consistent
+
+How to read this
+  noise(uV)    the channel's own noise, in microvolts, over the demod band.
+  Var(n) mV^2  the same thing as a variance — it IS the Var(n_i) the
+               cross-sensor cell prints for this diode.
+  vs quietest  how many times noisier than the best channel.
+  consistency  'consistent' = same floor everywhere; 'varies*' = the floor
+               changes with frequency (usually a 1/f rise down low), so read
+               the number as a typical mid-band value, not an exact constant.
+
+Where each number came from
+  BPW34_1   averaged over 75 clean bands (e.g. 206, 1707, 740 Hz);  31 rejected as too near a spur
+  BPW34_2   averaged over 100 clean bands (e.g. 195, 857, 206 Hz);  6 rejected as too near a spur
+  Inano_1   averaged over 105 clean bands (e.g. 195, 2193, 1792 Hz);  1 rejected as too near a spur
+  Inano_2   averaged over 94 clean bands (e.g. 1744, 1058, 892 Hz);  12 rejected as too near a spur
+
+Rejected bands are ones whose floor changed with window width — spur
+leakage (the carrier and the 1 kHz MCU line), not real diode noise.

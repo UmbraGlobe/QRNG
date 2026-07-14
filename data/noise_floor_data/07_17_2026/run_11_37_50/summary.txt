@@ -1,0 +1,32 @@
+====================================================================
+ NOISE FLOOR  —  the noise each photodiode adds on its own
+====================================================================
+Extra electronic/pickup noise per channel, measured only where no
+carrier or interference lives, then scaled to the analysis band.
+Record : 150000 samples (30 s)   Fs = 5000 Hz   carrier = 930.5 Hz
+Scaled : to the 4 Hz demod window (same band the cross-sensor cell uses)
+
+  sensor    noise uV rms    Var(n) mV^2  vs quietest  consistency
+  ---------------------------------------------------------------
+  BPW34_1           43.0       1.85e-03         1.0x   consistent
+  BPW34_2           95.6       9.14e-03         4.9x   consistent
+  Inano_1          114.2       1.30e-02         7.0x   consistent
+  Inano_2           89.8       8.07e-03         4.4x   consistent
+
+How to read this
+  noise uV rms  RMS of the channel's own noise over the demod band, in µV.
+                It is sqrt(Var(n)) — a standard deviation (zero-mean), not a
+                peak and not a per-√Hz density.
+  Var(n) mV^2   the same noise as a variance — it IS the Var(n_i) the
+                cross-sensor cell prints for this diode.
+  vs quietest   how many times noisier than the best channel.
+  consistency   'consistent' = same floor everywhere; 'varies*' = the floor
+                changes with frequency (usually a 1/f rise down low), so read
+                the number as a typical mid-band value, not an exact constant.
+
+Where each number came from
+  BPW34_1   averaged over 78 clean bands (e.g. 1755, 27, 195 Hz);  28 rejected as too near a spur
+  BPW34_2   averaged over 94 clean bands (e.g. 1755, 1295, 655 Hz);  12 rejected as too near a spur
+  Inano_1   averaged over 105 clean bands (e.g. 609, 1295, 243 Hz);  1 rejected as too near a spur
+  Inano_2   averaged over 93 clean bands (e.g. 1755, 609, 1744 Hz);  13 rejected as too near a spur
+  full per-band table saved alongside as summary_verbose.txt

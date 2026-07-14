@@ -45,11 +45,11 @@ static void timerCallback(timer_callback_args_t* p_args) {
   }
 }
 
-#define SAMPLE_COUNT 32
+#define SAMPLE_COUNT 128
 
-const int MAX_VOLTAGE = 1.4;
-const int MIN_VOLTAGE = 0.6;
-const int SYSTEM_VOLTAGE = 5;
+const float MAX_VOLTAGE = 1.2;
+const float MIN_VOLTAGE = 0.4;
+const float SYSTEM_VOLTAGE = 5;
 
 const int DAC_RESOLUTION = 65535;
 const int VAL_HIGH = (MAX_VOLTAGE * DAC_RESOLUTION) / SYSTEM_VOLTAGE;

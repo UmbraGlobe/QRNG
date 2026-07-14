@@ -1,0 +1,104 @@
+SIGNAL-PATH DIAGNOSTICS - is the common mode really AM (what the covariance model needs)?
+[1] carrier freq  [2] clock lock  [3] AM/PM split  [4] cross-channel corr  [5] additive floor  [6] bandwidth sweep  [7] CMR preview
+
+4 sensors x 2 windows, Fs = 1499.25 Hz, LO = CARRIER_FREQ = 286.884 Hz, band = +/-2.0 Hz
+
+================================================================
+TRIAL t1
+================================================================
+
+[1] carrier: FFT peak = 286.957 Hz, LO off by -0.073 Hz -> OK
+
+[2] clock lock (locked if phase wander << 0.1 rad):
+   BPW34_1: LO offset -0.001 Hz, phase wander 0.0048 rad -> locked
+   BPW34_2: LO offset -0.001 Hz, phase wander 0.0038 rad -> locked
+   Inano_1: LO offset -0.001 Hz, phase wander 0.0086 rad -> locked
+   Inano_2: LO offset -0.000 Hz, phase wander 0.0091 rad -> locked
+
+[3] AM/PM split (envelope units, mV^2; Var_AM ~ Var(A_i) of the variance cell):
+   BPW34_1: a =  14.627 mV, Var_AM = 0.0977, Var_PM = 0.0050 -> AM dominates (model OK)
+   BPW34_2: a =  18.248 mV, Var_AM = 0.1448, Var_PM = 0.0054 -> AM dominates (model OK)
+   Inano_1: a =   9.953 mV, Var_AM = 0.0506, Var_PM = 0.0073 -> AM dominates (model OK)
+   Inano_2: a =   8.055 mV, Var_AM = 0.0375, Var_PM = 0.0058 -> AM dominates (model OK)
+
+[4] cross-channel correlation:
+   BPW34_1-BPW34_2   : envelope corr +0.957,  complex corr |rho| = 0.907 at -4.3 deg
+   BPW34_1-Inano_1   : envelope corr +0.817,  complex corr |rho| = 0.744 at +0.9 deg
+   BPW34_1-Inano_2   : envelope corr +0.879,  complex corr |rho| = 0.817 at -4.9 deg
+   BPW34_2-Inano_1   : envelope corr +0.885,  complex corr |rho| = 0.814 at -3.1 deg
+   BPW34_2-Inano_2   : envelope corr +0.925,  complex corr |rho| = 0.847 at -4.3 deg
+   Inano_1-Inano_2   : envelope corr +0.891,  complex corr |rho| = 0.813 at -7.0 deg
+
+[5] additive floor at 279 Hz (carrier-free band):
+   BPW34_1: predicted floor part of Var(A) = 0.0059 mV^2  (6% of measured Var(A))
+   BPW34_2: predicted floor part of Var(A) = 0.0061 mV^2  (4% of measured Var(A))
+   Inano_1: predicted floor part of Var(A) = 0.0106 mV^2  (21% of measured Var(A))
+   Inano_2: predicted floor part of Var(A) = 0.0095 mV^2  (25% of measured Var(A))
+floor envelope corr (BPW34_1-BPW34_2): +0.446  (>> 0 = shared pickup, not independent noise)
+
+[6] envelope corr vs bandpass half-width (BPW34_1-BPW34_2):
+   +/- 0.5 Hz: corr +1.000, Var(A_BPW34_1) = 14.0425 mV^2
+   +/- 1.0 Hz: corr +0.999, Var(A_BPW34_1) = 3.4309 mV^2
+   +/- 2.0 Hz: corr +0.957, Var(A_BPW34_1) = 0.0977 mV^2
+   +/- 5.0 Hz: corr +0.076, Var(A_BPW34_1) = 0.0175 mV^2
+   +/-10.0 Hz: corr -0.020, Var(A_BPW34_1) = 0.0462 mV^2
+
+[7] CMR: RMS(m_est) = 2.129%, RMS(d) = 0.622%, corr(d, m_est) = -0.025
+    variance below 0.5 Hz: m_est 41%, d 44%  (high = slow drift, low = broadband)
+
+================================================================
+TRIAL t2
+================================================================
+
+[1] carrier: FFT peak = 286.957 Hz, LO off by -0.073 Hz -> OK
+
+[2] clock lock (locked if phase wander << 0.1 rad):
+   BPW34_1: LO offset -0.001 Hz, phase wander 0.0050 rad -> locked
+   BPW34_2: LO offset -0.001 Hz, phase wander 0.0032 rad -> locked
+   Inano_1: LO offset -0.001 Hz, phase wander 0.0091 rad -> locked
+   Inano_2: LO offset -0.001 Hz, phase wander 0.0069 rad -> locked
+
+[3] AM/PM split (envelope units, mV^2; Var_AM ~ Var(A_i) of the variance cell):
+   BPW34_1: a =  14.602 mV, Var_AM = 0.1081, Var_PM = 0.0053 -> AM dominates (model OK)
+   BPW34_2: a =  18.218 mV, Var_AM = 0.1488, Var_PM = 0.0034 -> AM dominates (model OK)
+   Inano_1: a =   9.878 mV, Var_AM = 0.0443, Var_PM = 0.0091 -> AM dominates (model OK)
+   Inano_2: a =   7.994 mV, Var_AM = 0.0381, Var_PM = 0.0031 -> AM dominates (model OK)
+
+[4] cross-channel correlation:
+   BPW34_1-BPW34_2   : envelope corr +0.964,  complex corr |rho| = 0.935 at -3.6 deg
+   BPW34_1-Inano_1   : envelope corr +0.759,  complex corr |rho| = 0.661 at +5.4 deg
+   BPW34_1-Inano_2   : envelope corr +0.796,  complex corr |rho| = 0.748 at -8.8 deg
+   BPW34_2-Inano_1   : envelope corr +0.813,  complex corr |rho| = 0.730 at +1.9 deg
+   BPW34_2-Inano_2   : envelope corr +0.807,  complex corr |rho| = 0.767 at -7.6 deg
+   Inano_1-Inano_2   : envelope corr +0.811,  complex corr |rho| = 0.746 at -8.1 deg
+
+[5] additive floor at 279 Hz (carrier-free band):
+   BPW34_1: predicted floor part of Var(A) = 0.0085 mV^2  (8% of measured Var(A))
+   BPW34_2: predicted floor part of Var(A) = 0.0061 mV^2  (4% of measured Var(A))
+   Inano_1: predicted floor part of Var(A) = 0.0071 mV^2  (16% of measured Var(A))
+   Inano_2: predicted floor part of Var(A) = 0.0079 mV^2  (21% of measured Var(A))
+floor envelope corr (BPW34_1-BPW34_2): -0.136  (>> 0 = shared pickup, not independent noise)
+
+[6] envelope corr vs bandpass half-width (BPW34_1-BPW34_2):
+   +/- 0.5 Hz: corr +1.000, Var(A_BPW34_1) = 13.9568 mV^2
+   +/- 1.0 Hz: corr +1.000, Var(A_BPW34_1) = 3.3700 mV^2
+   +/- 2.0 Hz: corr +0.964, Var(A_BPW34_1) = 0.1081 mV^2
+   +/- 5.0 Hz: corr +0.068, Var(A_BPW34_1) = 0.0145 mV^2
+   +/-10.0 Hz: corr -0.033, Var(A_BPW34_1) = 0.0400 mV^2
+
+[7] CMR: RMS(m_est) = 2.082%, RMS(d) = 0.601%, corr(d, m_est) = +0.153
+    variance below 0.5 Hz: m_est 41%, d 19%  (high = slow drift, low = broadband)
+
+================================================================
+INTERPRETATION
+================================================================
+- [2]/[3]: an unlocked clock or PM >> AM means the common mode is carrier phase jitter
+  (LED clock vs ADC clock), not intensity fluctuation. 2*sqrt(I^2+Q^2) is blind to it, so the
+  variance cell then correlates only the AM residue: low/negative corr and NaN var(m) follow.
+  Fix: generate the carrier and sample on the same clock.
+- [5]: if Var(n_i) from the variance cell ~= the floor prediction, "% indep" is really the
+  electronics/pickup floor - an UPPER BOUND on private diode noise. Raise a_i (TIA / optical power).
+- [6]: Var(A) scaling ~linearly with bandwidth = floor-dominated envelope; corr collapsing as the
+  band widens means the common AM lives close to the carrier.
+- [7]: RMS(d) << RMS(m_est) shows common-mode rejection working; d's floor sets the entropy budget.
+

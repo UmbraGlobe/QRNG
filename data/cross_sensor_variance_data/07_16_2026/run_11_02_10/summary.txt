@@ -1,0 +1,127 @@
+A_i is the demodulated message of sensor i (LED FLUCTUATION + CIRCUIT NOISE + INTERFERENCE...)
+a_i is the mean carrier amplitude of sensor i
+Cov(A_i, A_j) = a_i * a_j * Var(m)  ->  Var(m) = Cov(A_i, A_j) / (a_i * a_j)
+Var(n_i) = Var(A_i) - a_i^2 * Var(m)  (independent per-diode noise)
+
+Across 4 sensors over 2 independent windows, Fs = 5000.00 Hz, Carrier Frequency = 930.50 Hz
+Transient guard: 2786 samples (0.557 s) per end after the ±2 Hz bandpass, 75 (0.015 s) after the 150 Hz demod low-pass (7 tau each).
+
+================================================================
+TRIAL t1
+================================================================
+
+[1] COVARIANCE (mV^2) - diagonal = total fluctuations of each channel, off-diagonal = fluctuation shared between two channels
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1      0.0461      0.0405      0.0105      0.0573
+   BPW34_2      0.0405      0.0444      0.0139      0.0492
+   Inano_1      0.0105      0.0139      0.0227      0.0041
+   Inano_2      0.0573      0.0492      0.0041      0.0945
+
+[2] CORRELATION (-1 to 1)-  near 1 = channels track togther (shared LED), 0 = independent
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1      1.0000      0.8942      0.3233      0.8682
+   BPW34_2      0.8942      1.0000      0.4359      0.7593
+   Inano_1      0.3233      0.4359      1.0000      0.0876
+   Inano_2      0.8682      0.7593      0.0876      1.0000
+
+[3] NORMALIZED COVARIANCE - off-diagonals = var(m) estimate per pair; all equal => one shared LED fluctuation
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1  2.8745e-06  2.4635e-06  1.5332e-06  3.4948e-06
+   BPW34_2  2.4635e-06  2.6402e-06  1.9814e-06  2.9289e-06
+   Inano_1  1.5332e-06  1.9814e-06  7.8259e-06  5.8181e-07
+   Inano_2  3.4948e-06  2.9289e-06  5.8181e-07  5.6362e-06
+
+var(m) = 2.9624e-06   RMS(m) = sqrt(var(m)) = 0.0017   (mean over 3 coupled pair(s), corr > 0.5)
+
+[4] TRANSIENT CONVERGENCE - var(m) must not depend on how much edge we cut
+       guard/end  usable s  indep pts      var(m)    RMS(m)
+            2786     58.86        235  2.9624e-06    0.0017
+       5572 (2x)     57.71        231  6.9768e-07    0.0008
+    var(m) moves 76.4% at 2x guard (tolerance 20%) -> NOT CONVERGED
+    *** REJECTED: this estimate is still tracking filter ring-down, not the LED.
+    The residual transient is common-mode and scales with a_i, so it masquerades
+    as m(t) and inflates RMS(m). Capture a longer record (see gotchas.md).
+
+   channel  a_i (mV)    Var(A_i)  a^2*Var(m)    Var(n_i)  % indep  coupled
+   BPW34_1   126.693      0.0461      0.0475      0.0000     0.0%      yes
+   BPW34_2   129.698      0.0444      0.0498      0.0000     0.0%      yes
+   Inano_1    53.909      0.0227      0.0086      0.0141    62.1%       NO
+   Inano_2   129.507      0.0945      0.0497      0.0448    47.4%      yes
+  Var(n_i)=0 (clamped): a_i^2*Var(m) >= Var(A_i), i.e. ~100% common mode.
+  NOTE: ~100% common mode with corr ~= 1.000 is ALSO the signature of a leftover
+  filter transient. Trust it only if [4] says CONVERGED.
+
+================================================================
+TRIAL t2
+================================================================
+
+[1] COVARIANCE (mV^2) - diagonal = total fluctuations of each channel, off-diagonal = fluctuation shared between two channels
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1      0.0541      0.0294      0.0027      0.0597
+   BPW34_2      0.0294      0.0506      0.0221      0.0287
+   Inano_1      0.0027      0.0221      0.0310     -0.0028
+   Inano_2      0.0597      0.0287     -0.0028      0.0743
+
+[2] CORRELATION (-1 to 1)-  near 1 = channels track togther (shared LED), 0 = independent
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1      1.0000      0.5615      0.0655      0.9425
+   BPW34_2      0.5615      1.0000      0.5575      0.4689
+   Inano_1      0.0655      0.5575      1.0000     -0.0587
+   Inano_2      0.9425      0.4689     -0.0587      1.0000
+
+[3] NORMALIZED COVARIANCE - off-diagonals = var(m) estimate per pair; all equal => one shared LED fluctuation
+               BPW34_1     BPW34_2     Inano_1     Inano_2
+   BPW34_1  3.3817e-06  1.7911e-06  3.9091e-07  3.6695e-06
+   BPW34_2  1.7911e-06  3.0093e-06  3.1401e-06  1.7222e-06
+   Inano_1  3.9091e-07  3.1401e-06  1.0542e-05 -4.0348e-07
+   Inano_2  3.6695e-06  1.7222e-06 -4.0348e-07  4.4821e-06
+
+var(m) = 2.8669e-06   RMS(m) = sqrt(var(m)) = 0.0017   (mean over 3 coupled pair(s), corr > 0.5)
+
+[4] TRANSIENT CONVERGENCE - var(m) must not depend on how much edge we cut
+       guard/end  usable s  indep pts      var(m)    RMS(m)
+            2786     58.86        235  2.8669e-06    0.0017
+       5572 (2x)     57.71        231  1.1134e-06    0.0011
+    var(m) moves 61.2% at 2x guard (tolerance 20%) -> NOT CONVERGED
+    *** REJECTED: this estimate is still tracking filter ring-down, not the LED.
+    The residual transient is common-mode and scales with a_i, so it masquerades
+    as m(t) and inflates RMS(m). Capture a longer record (see gotchas.md).
+
+   channel  a_i (mV)    Var(A_i)  a^2*Var(m)    Var(n_i)  % indep  coupled
+   BPW34_1   126.434      0.0541      0.0458      0.0082    15.2%      yes
+   BPW34_2   129.619      0.0506      0.0482      0.0024     4.7%      yes
+   Inano_1    54.186      0.0310      0.0084      0.0225    72.8%      yes
+   Inano_2   128.746      0.0743      0.0475      0.0268    36.0%      yes
+
+E[RMS(m)] = NOT REPORTED - no trial passed the transient-convergence check [4].
+Every estimate is dominated by filter ring-down. Do not quote these numbers.
+
+================================================================
+INTERPRETATION
+================================================================
+Here are the variables in the model V(t) = A_i(t)cos(2πf_c t + θ),  A_i(t) = a_i + a_i·m(t) + n_i(t):
+
+Measured / raw
+    V_i(t)      — the raw load voltage of diode i (the carrier sine you actually sample), mV.
+    f_c         — carrier frequency, 930.5 Hz (LED drive tone). θ is its phase.
+
+Per-diode envelope (after I/Q demod)
+    A_i(t)      — demodulated envelope of diode i: the slowly-varying carrier amplitude, mV. This is what all the covariance math runs on.
+    a_i         — mean carrier amplitude of diode i (the constant part of A_i), mV. Represents the average optical power reaching that diode.
+
+The two things we're separating
+    m(t)        — LED's fractional intensity fluctuation, dimensionless, E[m]=0. Shared by all diodes (common mode). RMS(m) ~ 1% = how much the brightness wobbles relative to its mean.
+    n_i(t)      — independent per-diode in-band noise (shot/thermal + local pickup), mV. Uncorrelated across diodes. Currently pinned at the electronics floor.
+
+Computed statistics
+    Var(m)      — variance of m, dimensionless. Estimated as Cov(A_i,A_j)/(a_i·a_j).
+    RMS(m)      — √Var(m), the fractional fluctuation (0.01 = 1%). E[RMS(m)] averages it over trials.
+    Var(A_i)    — total variance of diode i's envelope, mV² (diagonal of cov_A).
+    a_i²·Var(m) — the part of Var(A_i) explained by the shared LED (common mode), mV².
+    Var(n_i)    — remainder Var(A_i) − a_i²·Var(m) = independent noise, mV².
+    cov_A       — envelope covariance matrix, mV² (Var(A_i) on diagonal, shared fluctuation off-diagonal).
+    corr_A      — envelope correlation matrix, −1…1 (near 1 = tracking the same LED).
+    norm_cov    — cov_A / (a_i·a_j); off-diagonals are the per-pair Var(m) estimate.
+
+Trust gate
+    [4]         — RMS(m) is only physical if it survives doubling the transient guard. m(t) is a property of the light; it cannot depend on how much of the record you discard.

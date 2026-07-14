@@ -1,0 +1,2 @@
+Sampling Rate = 5000.00 Hz
+Carrier Frequency = 930.500000 Hz
