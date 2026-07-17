@@ -1,0 +1,37 @@
+====================================================================
+ NOISE FLOOR  —  the noise each photodiode adds on its own
+====================================================================
+Extra electronic/pickup noise per channel, measured only where no
+carrier or interference lives, then scaled to the analysis band.
+Record : 150000 samples (60 s)   Fs = 2500 Hz   carrier = 60.0 Hz
+Scaled : to the 4 Hz demod window (same band the cross-sensor cell uses)
+
+  sensor     carrier mV noise uV rms   SNR dB    Var(n) mV^2  vs quietest  consistency
+  ------------------------------------------------------------------------------------
+  BPW34_1         0.498         57.8     15.7       3.34e-03         1.0x      varies*
+  BPW34_2        44.248         69.3     53.1       4.80e-03         1.4x      varies*
+  Inano_1        44.119         73.7     52.5       5.43e-03         1.6x      varies*
+  Inano_2         0.395         81.6     10.7       6.66e-03         2.0x   consistent
+
+How to read this
+  carrier mV    carrier amplitude a_i, from integrating the PSD peak at the
+                carrier (tone power = a_i^2/2). This is the wanted signal.
+  noise uV rms  RMS of the channel's own noise over the demod band, in µV.
+                It is sqrt(Var(n)) — a standard deviation (zero-mean), not a
+                peak and not a per-√Hz density.
+  SNR dB        carrier power over noise power in the demod band,
+                10·log10((a_i^2/2)/Var(n)) — i.e. carrier-RMS / noise-RMS in dB.
+                Per-channel carrier SNR, not the inter-diode PUF comparison.
+  Var(n) mV^2   the same noise as a variance — it IS the Var(n_i) the
+                cross-sensor cell prints for this diode.
+  vs quietest   how many times noisier than the best channel.
+  consistency   'consistent' = same floor everywhere; 'varies*' = the floor
+                changes with frequency (usually a 1/f rise down low), so read
+                the number as a typical mid-band value, not an exact constant.
+
+Where each number came from
+  BPW34_1   averaged over 20 clean bands (e.g. 1145, 245, 645 Hz);  50 rejected as too near a spur
+  BPW34_2   averaged over 27 clean bands (e.g. 1145, 655, 1045 Hz);  43 rejected as too near a spur
+  Inano_1   averaged over 32 clean bands (e.g. 1145, 755, 555 Hz);  38 rejected as too near a spur
+  Inano_2   averaged over 29 clean bands (e.g. 555, 1045, 245 Hz);  41 rejected as too near a spur
+  full per-band table saved alongside as summary_verbose.txt

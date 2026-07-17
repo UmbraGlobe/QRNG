@@ -258,10 +258,10 @@ static void timerCallback(timer_callback_args_t* p_args) {
   }
 }
 
-#define SAMPLE_COUNT 32
+#define SAMPLE_COUNT 128
 
-const int MAX_VOLTAGE = 1.4;
-const int MIN_VOLTAGE = 0.6;
+const float MAX_VOLTAGE = 1.4;
+const float MIN_VOLTAGE = 0.6;
 const int SYSTEM_VOLTAGE = 5;
 
 const int DAC_RESOLUTION = 65535;
@@ -297,7 +297,7 @@ void setup() {
   int8_t channel = FspTimer::get_available_timer(type);
   if (channel < 0) return;
   //setup timer
-  fsp_timer.begin(TIMER_MODE_PERIODIC, type, channel, 2500, 50.0, timerCallback, nullptr);
+  fsp_timer.begin(TIMER_MODE_PERIODIC, type, channel, 5000, 50.0, timerCallback, nullptr);
   fsp_timer.setup_overflow_irq();
   fsp_timer.open();
   fsp_timer.start();
