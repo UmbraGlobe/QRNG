@@ -1,0 +1,22 @@
+LO frequency error   df = +0.0163 Hz  (large |df| -> re-run Setup / refine CARRIER_FREQ)
+3 trials x 99814 samples (19.96 s each), 299442 samples after settling (558 dropped, 0.112 s)
+
+Trial  1: A2V-16_A2=410.122  A2V-16_A3=324.894  A2V-16_A4=314.532  A2V-16_A5=266.990   bits=[1, 1, 1, 1, 1, 1]
+Trial  2: A2V-16_A2=410.008  A2V-16_A3=324.740  A2V-16_A4=314.402  A2V-16_A5=266.781   bits=[1, 1, 1, 1, 1, 1]
+Trial  3: A2V-16_A2=409.918  A2V-16_A3=324.650  A2V-16_A4=314.337  A2V-16_A5=266.757   bits=[1, 1, 1, 1, 1, 1]
+
+Per-sensor drift across trials (mV) - the floor the surface fingerprint must beat:
+  A2V-16_A2 mean=410.016  std= 0.0835  CV= 0.02%
+  A2V-16_A3 mean=324.761  std= 0.1005  CV= 0.03%
+  A2V-16_A4 mean=314.424  std= 0.0809  CV= 0.03%
+  A2V-16_A5 mean=266.843  std= 0.1047  CV= 0.04%
+
+Pairwise ratio drift (common mode cancels in the ratio):
+  A2V-16_A2/A2V-16_A3 mean= 1.2625  std= 0.0001  CV= 0.01%
+  A2V-16_A2/A2V-16_A4 mean= 1.3040  std= 0.0001  CV= 0.01%
+  A2V-16_A2/A2V-16_A5 mean= 1.5365  std= 0.0003  CV= 0.02%
+  A2V-16_A3/A2V-16_A4 mean= 1.0329  std= 0.0001  CV= 0.01%
+  A2V-16_A3/A2V-16_A5 mean= 1.2171  std= 0.0002  CV= 0.01%
+  A2V-16_A4/A2V-16_A5 mean= 1.1783  std= 0.0002  CV= 0.02%
+nBit stability: 3/3 trials gave the bitstring 1 1 1 1 1 1
+1 distinct bitstring(s) seen (1 = perfectly reproducible)

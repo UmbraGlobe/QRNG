@@ -1,7 +1,14 @@
 #include <Arduino.h>
 #include <FspTimer.h>
-#include <analogWave.h>
+#include "pwm.h"
 #include "analog.h"  // Added for direct Renesas ADC access
+
+const int   CARRIER_PIN     = D3;    
+const float CARRIER_FREQ_HZ = 930.0;
+const float CARRIER_DUTY     = 50.0;  
+
+PwmOut carrier(CARRIER_PIN);
+
 FspTimer fsp_timer;
 
 
@@ -186,7 +193,7 @@ static bool readAdcFrame(uint16_t output[4]) {
 
   if (R_ADC_Read(
         &adcCtrl,
-        static_cast<adc_channel_t>(ADC_CH_A4),
+        static_cast<adc_channel_t>(ADC_CH_A1),
         &output[0]
       ) != FSP_SUCCESS) {
     return false;
@@ -194,7 +201,7 @@ static bool readAdcFrame(uint16_t output[4]) {
 
   if (R_ADC_Read(
         &adcCtrl,
-        static_cast<adc_channel_t>(ADC_CH_A1),
+        static_cast<adc_channel_t>(ADC_CH_A2),
         &output[1]
       ) != FSP_SUCCESS) {
     return false;
@@ -202,7 +209,7 @@ static bool readAdcFrame(uint16_t output[4]) {
 
   if (R_ADC_Read(
         &adcCtrl,
-        static_cast<adc_channel_t>(ADC_CH_A2),
+        static_cast<adc_channel_t>(ADC_CH_A3),
         &output[2]
       ) != FSP_SUCCESS) {
     return false;
@@ -210,7 +217,7 @@ static bool readAdcFrame(uint16_t output[4]) {
 
   if (R_ADC_Read(
         &adcCtrl,
-        static_cast<adc_channel_t>(ADC_CH_A3),
+        static_cast<adc_channel_t>(ADC_CH_A4),
         &output[3]
       ) != FSP_SUCCESS) {
     return false;
@@ -229,16 +236,16 @@ static void timerCallback(timer_callback_args_t* p_args) {
     if (readAdcFrame(adcValues)) {
 
     fillBuf->packets[sampleIndex].channels[0] =
-      adcValues[0];  // A4
+      adcValues[0];  // A1
 
     fillBuf->packets[sampleIndex].channels[1] =
-      adcValues[1];  // A1
+      adcValues[1];  // A2
 
     fillBuf->packets[sampleIndex].channels[2] =
-      adcValues[2];  // A2
+      adcValues[2];  // A3
 
     fillBuf->packets[sampleIndex].channels[3] =
-      adcValues[3];  // A3
+      adcValues[3];  // A4
 
   } else {
     fillBuf->packets[sampleIndex].channels[0] = 0xFFFF;
@@ -258,33 +265,12 @@ static void timerCallback(timer_callback_args_t* p_args) {
   }
 }
 
-#define SAMPLE_COUNT 128
-
-const float MAX_VOLTAGE = 1.4;
-const float MIN_VOLTAGE = 0.6;
-const int SYSTEM_VOLTAGE = 5;
-
-const int DAC_RESOLUTION = 65535;
-const int VAL_HIGH = (MAX_VOLTAGE * DAC_RESOLUTION) / SYSTEM_VOLTAGE;
-const int VAL_LOW  = (MIN_VOLTAGE * DAC_RESOLUTION) / SYSTEM_VOLTAGE;
-
-const int centerOffset = (VAL_HIGH + VAL_LOW) / 2;
-const int amplitude = (VAL_HIGH - VAL_LOW) / 2;
-const int SINE_FREQ = 930; 
-
-uint16_t offsetSin[SAMPLE_COUNT];
-
-analogWave wave(DAC, offsetSin, SAMPLE_COUNT, 0);
-
 void setup() {
   Serial.begin(921600);
   pinMode(DAC, OUTPUT);
 
-  for (int i = 0; i < SAMPLE_COUNT; i++) {
-    offsetSin[i] = (uint16_t)(centerOffset + (amplitude * sin(2.0 * PI * i / SAMPLE_COUNT)));
-  }
+  carrier.begin(CARRIER_FREQ_HZ, CARRIER_DUTY);
 
-  wave.begin(SINE_FREQ);
   analogReadResolution(14);
   
   if (!initializeAdc()) {
@@ -307,12 +293,7 @@ int count = 0;
 
 void loop() {
   if (dataReady) {
-    count++;
     Serial.write((uint8_t*)sendBuf, sizeof(DataPayload));
     dataReady = false;
-    if (count % 100 == 0)
-    {
-      //wave.freq(SINE_FREQ+count/10);
-    }
   }
 }

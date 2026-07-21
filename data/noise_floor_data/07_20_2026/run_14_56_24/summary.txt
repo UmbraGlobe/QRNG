@@ -1,0 +1,37 @@
+====================================================================
+ NOISE FLOOR  —  the noise each photodiode adds on its own
+====================================================================
+Extra electronic/pickup noise per channel, measured only where no
+carrier or interference lives, then scaled to the analysis band.
+Record : 150000 samples (60 s)   Fs = 2500 Hz   carrier = 930.0 Hz
+Scaled : to the 4 Hz demod window (same band the cross-sensor cell uses)
+
+  sensor     carrier mV noise uV rms   SNR dB    Var(n) mV^2  vs quietest  consistency
+  ------------------------------------------------------------------------------------
+  A2V-16_A2     696.913        102.4     73.6       1.05e-02         1.1x   consistent
+  A2V-16_A3     789.735        138.1     72.1       1.91e-02         1.9x   consistent
+  A2V-16_A4     617.492        203.3     66.6       4.13e-02         4.2x   consistent
+  A2V-16_A5     248.410         99.6     64.9       9.93e-03         1.0x      varies*
+
+How to read this
+  carrier mV    carrier amplitude a_i, from integrating the PSD peak at the
+                carrier (tone power = a_i^2/2). This is the wanted signal.
+  noise uV rms  RMS of the channel's own noise over the demod band, in µV.
+                It is sqrt(Var(n)) — a standard deviation (zero-mean), not a
+                peak and not a per-√Hz density.
+  SNR dB        carrier power over noise power in the demod band,
+                10·log10((a_i^2/2)/Var(n)) — i.e. carrier-RMS / noise-RMS in dB.
+                Per-channel carrier SNR, not the inter-diode PUF comparison.
+  Var(n) mV^2   the same noise as a variance — it IS the Var(n_i) the
+                cross-sensor cell prints for this diode.
+  vs quietest   how many times noisier than the best channel.
+  consistency   'consistent' = same floor everywhere; 'varies*' = the floor
+                changes with frequency (usually a 1/f rise down low), so read
+                the number as a typical mid-band value, not an exact constant.
+
+Where each number came from
+  A2V-16_A2 averaged over 15 clean bands (e.g. 25, 1195, 95 Hz);  55 rejected as too near a spur
+  A2V-16_A3 averaged over 23 clean bands (e.g. 705, 1195, 1105 Hz);  47 rejected as too near a spur
+  A2V-16_A4 averaged over 15 clean bands (e.g. 1105, 95, 305 Hz);  55 rejected as too near a spur
+  A2V-16_A5 averaged over 24 clean bands (e.g. 695, 795, 1005 Hz);  46 rejected as too near a spur
+  full per-band table saved alongside as summary_verbose.txt
