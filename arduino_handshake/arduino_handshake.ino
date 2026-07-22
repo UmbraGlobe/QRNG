@@ -1,11 +1,14 @@
 #include <Arduino.h>
 #include <FspTimer.h>
 #include "pwm.h"
-#include "analog.h"  // Added for direct Renesas ADC access
+#include "analog.h"  
+#include <SPI.h>
 
-const int   CARRIER_PIN     = D3;    
+const int CARRIER_PIN = D3;    
 const float CARRIER_FREQ_HZ = 930.0;
-const float CARRIER_DUTY     = 50.0;  
+const float CARRIER_DUTY = 50.0;  
+const int TLC_LE = D9;
+const uint8_t LED_ENABLE = 0b11111111;
 
 PwmOut carrier(CARRIER_PIN);
 
@@ -45,28 +48,15 @@ static const uint8_t ADC_CH_A2 = 1;
 static const uint8_t ADC_CH_A3 = 2;
 static const uint8_t ADC_CH_A4 = 21;
 
+SPISettings tlcSPI(4000000, MSBFIRST, SPI_MODE0);
+
 static bool initializeAdc() {
 
   // Put Arduino pins A1–A4 into analog mode.
-  pinPeripheral(
-    digitalPinToBspPin(A1),
-    IOPORT_CFG_ANALOG_ENABLE
-  );
-
-  pinPeripheral(
-    digitalPinToBspPin(A2),
-    IOPORT_CFG_ANALOG_ENABLE
-  );
-
-  pinPeripheral(
-    digitalPinToBspPin(A3),
-    IOPORT_CFG_ANALOG_ENABLE
-  );
-
-  pinPeripheral(
-    digitalPinToBspPin(A4),
-    IOPORT_CFG_ANALOG_ENABLE
-  );
+  pinPeripheral(digitalPinToBspPin(A1), IOPORT_CFG_ANALOG_ENABLE);
+  pinPeripheral(digitalPinToBspPin(A2), IOPORT_CFG_ANALOG_ENABLE);
+  pinPeripheral(digitalPinToBspPin(A3), IOPORT_CFG_ANALOG_ENABLE);
+  pinPeripheral(digitalPinToBspPin(A4), IOPORT_CFG_ANALOG_ENABLE);
 
   // Disable hardware averaging.
   adcExt.add_average_count = ADC_ADD_OFF;
@@ -162,92 +152,47 @@ static bool initializeAdc() {
 }
 
 static bool readAdcFrame(uint16_t output[4]) {
-
-  // Start one scan containing A1, A2, A3 and A4.
-  if (R_ADC_ScanStart(&adcCtrl) != FSP_SUCCESS) {
-    return false;
-  }
-
+  if (R_ADC_ScanStart(&adcCtrl) != FSP_SUCCESS) return false;
   adc_status_t status{};
-
-  // Prevent an ADC problem from trapping the timer interrupt forever.
   uint32_t timeoutGuard = 10000;
 
   do {
-    if (R_ADC_StatusGet(
-          &adcCtrl,
-          &status
-        ) != FSP_SUCCESS) {
-      return false;
-    }
-
-    if (timeoutGuard == 0) {
-      return false;
-    }
-
+    if (R_ADC_StatusGet(&adcCtrl, &status) != FSP_SUCCESS) return false;
+    if (timeoutGuard == 0) return false;
     timeoutGuard--;
-
-  } while (
-    status.state == ADC_STATE_SCAN_IN_PROGRESS
-  );
-
-  if (R_ADC_Read(
-        &adcCtrl,
-        static_cast<adc_channel_t>(ADC_CH_A1),
-        &output[0]
-      ) != FSP_SUCCESS) {
-    return false;
-  }
-
-  if (R_ADC_Read(
-        &adcCtrl,
-        static_cast<adc_channel_t>(ADC_CH_A2),
-        &output[1]
-      ) != FSP_SUCCESS) {
-    return false;
-  }
-
-  if (R_ADC_Read(
-        &adcCtrl,
-        static_cast<adc_channel_t>(ADC_CH_A3),
-        &output[2]
-      ) != FSP_SUCCESS) {
-    return false;
-  }
-
-  if (R_ADC_Read(
-        &adcCtrl,
-        static_cast<adc_channel_t>(ADC_CH_A4),
-        &output[3]
-      ) != FSP_SUCCESS) {
-    return false;
-  }
-
+  } while (status.state == ADC_STATE_SCAN_IN_PROGRESS );
+    
+  if (R_ADC_Read(&adcCtrl, static_cast<adc_channel_t>(ADC_CH_A1), &output[0]) != FSP_SUCCESS) return false;
+  if (R_ADC_Read(&adcCtrl, static_cast<adc_channel_t>(ADC_CH_A2), &output[1]) != FSP_SUCCESS) return false;
+  if (R_ADC_Read(&adcCtrl, static_cast<adc_channel_t>(ADC_CH_A3), &output[2]) != FSP_SUCCESS) return false;
+  if (R_ADC_Read(&adcCtrl, static_cast<adc_channel_t>(ADC_CH_A4), &output[3]) != FSP_SUCCESS) return false;
   return true;
 }
 
+void initializeSPI() {
+  SPI.begin();
+  SPI.beginTransaction(tlcSPI);
+  SPI.transfer(LED_ENABLE);
+  SPI.endTransaction();
 
+  digitalWrite(TLC_LE, HIGH);
+  delayMicroseconds(1);
+  digitalWrite(TLC_LE, LOW);
+}
 
 static void timerCallback(timer_callback_args_t* p_args) {
   fillBuf->packets[sampleIndex].timestamp = micros();
 
   uint16_t adcValues[4];
-
-    if (readAdcFrame(adcValues)) {
-
-    fillBuf->packets[sampleIndex].channels[0] =
-      adcValues[0];  // A1
-
-    fillBuf->packets[sampleIndex].channels[1] =
-      adcValues[1];  // A2
-
-    fillBuf->packets[sampleIndex].channels[2] =
-      adcValues[2];  // A3
-
-    fillBuf->packets[sampleIndex].channels[3] =
-      adcValues[3];  // A4
-
-  } else {
+  if (readAdcFrame(adcValues)) 
+  {
+    fillBuf->packets[sampleIndex].channels[0] = adcValues[0]; //A1
+    fillBuf->packets[sampleIndex].channels[1] = adcValues[1]; //A2
+    fillBuf->packets[sampleIndex].channels[2] = adcValues[2]; //A3
+    fillBuf->packets[sampleIndex].channels[3] = adcValues[3]; //A4
+  } 
+  else 
+  {
     fillBuf->packets[sampleIndex].channels[0] = 0xFFFF;
     fillBuf->packets[sampleIndex].channels[1] = 0xFFFF;
     fillBuf->packets[sampleIndex].channels[2] = 0xFFFF;
@@ -268,6 +213,10 @@ static void timerCallback(timer_callback_args_t* p_args) {
 void setup() {
   Serial.begin(921600);
   pinMode(DAC, OUTPUT);
+  pinMode(TLC_LE, OUTPUT);
+  digitalWrite(TLC_LE, LOW);
+
+  initializeSPI();
 
   carrier.begin(CARRIER_FREQ_HZ, CARRIER_DUTY);
 
