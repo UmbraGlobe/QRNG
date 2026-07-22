@@ -1,0 +1,105 @@
+A_i is the demodulated message of sensor i (LED FLUCTUATION + CIRCUIT NOISE + INTERFERENCE...)
+a_i is the mean carrier amplitude of sensor i
+Cov(A_i, A_j) = a_i * a_j * Var(m)  ->  Var(m) = Cov(A_i, A_j) / (a_i * a_j)
+Var(n_i) = Var(A_i) - a_i^2 * Var(m)  (independent per-diode noise)
+
+Across 4 sensors over 2 independent windows, Fs = 5000.00 Hz, Carrier Frequency = 930.00 Hz
+
+================================================================
+TRIAL t1
+================================================================
+LO frequency error df = +0.0163 Hz (ref channel: A2V-16_A3)
+
+
+[1] COVARIANCE (mV^2) - diagonal = total fluctuations of each channel, off-diagonal = fluctuation shared between two channels
+             A2V-16_A1   A2V-16_A2   A2V-16_A3   A2V-16_A4
+ A2V-16_A1      0.4653      0.4973      0.5138      0.4999
+ A2V-16_A2      0.4973      0.5787      0.5657      0.5525
+ A2V-16_A3      0.5138      0.5657      0.6137      0.5744
+ A2V-16_A4      0.4999      0.5525      0.5744      0.5614
+
+[2] CORRELATION (-1 to 1)- near 1 = channels track togther (shared LED), 0 = independent
+             A2V-16_A1   A2V-16_A2   A2V-16_A3   A2V-16_A4
+ A2V-16_A1      1.0000      0.9584      0.9615      0.9782
+ A2V-16_A2      0.9584      1.0000      0.9493      0.9693
+ A2V-16_A3      0.9615      0.9493      1.0000      0.9786
+ A2V-16_A4      0.9782      0.9693      0.9786      1.0000
+
+[3] NORMALIZED COVARIANCE - off-diagonals = var(m) estimate per pair; all equal => one shared LED fluctuation
+             A2V-16_A1   A2V-16_A2   A2V-16_A3   A2V-16_A4
+ A2V-16_A1  4.9510e-07  4.8317e-07  4.7527e-07  4.7936e-07
+ A2V-16_A2  4.8317e-07  5.1338e-07  4.7779e-07  4.8369e-07
+ A2V-16_A3  4.7527e-07  4.7779e-07  4.9346e-07  4.7878e-07
+ A2V-16_A4  4.7936e-07  4.8369e-07  4.7878e-07  4.8508e-07
+
+var(m) = 4.7968e-07   RMS(m) = sqrt(var(m)) = 0.0007   (mean over 6 coupled pair(s), corr > 0.5)
+
+   channel  a_i (mV)    Var(A_i)  a^2*Var(m)    Var(n_i)  % indep  coupled
+ A2V-16_A1   969.432      0.4653      0.4508      0.0145     3.1%      yes
+ A2V-16_A2  1061.745      0.5787      0.5407      0.0380     6.6%      yes
+ A2V-16_A3  1115.164      0.6137      0.5965      0.0171     2.8%      yes
+ A2V-16_A4  1075.760      0.5614      0.5551      0.0063     1.1%      yes
+
+================================================================
+TRIAL t2
+================================================================
+LO frequency error df = +0.0163 Hz (ref channel: A2V-16_A3)
+
+
+[1] COVARIANCE (mV^2) - diagonal = total fluctuations of each channel, off-diagonal = fluctuation shared between two channels
+             A2V-16_A1   A2V-16_A2   A2V-16_A3   A2V-16_A4
+ A2V-16_A1      0.4421      0.4668      0.4892      0.4723
+ A2V-16_A2      0.4668      0.5404      0.5346      0.5192
+ A2V-16_A3      0.4892      0.5346      0.5729      0.5416
+ A2V-16_A4      0.4723      0.5192      0.5416      0.5278
+
+[2] CORRELATION (-1 to 1)- near 1 = channels track togther (shared LED), 0 = independent
+             A2V-16_A1   A2V-16_A2   A2V-16_A3   A2V-16_A4
+ A2V-16_A1      1.0000      0.9551      0.9720      0.9778
+ A2V-16_A2      0.9551      1.0000      0.9607      0.9722
+ A2V-16_A3      0.9720      0.9607      1.0000      0.9849
+ A2V-16_A4      0.9778      0.9722      0.9849      1.0000
+
+[3] NORMALIZED COVARIANCE - off-diagonals = var(m) estimate per pair; all equal => one shared LED fluctuation
+             A2V-16_A1   A2V-16_A2   A2V-16_A3   A2V-16_A4
+ A2V-16_A1  4.7086e-07  4.5397e-07  4.5294e-07  4.5334e-07
+ A2V-16_A2  4.5397e-07  4.7981e-07  4.5191e-07  4.5503e-07
+ A2V-16_A3  4.5294e-07  4.5191e-07  4.6117e-07  4.5193e-07
+ A2V-16_A4  4.5334e-07  4.5503e-07  4.5193e-07  4.5653e-07
+
+var(m) = 4.5319e-07   RMS(m) = sqrt(var(m)) = 0.0007   (mean over 6 coupled pair(s), corr > 0.5)
+
+   channel  a_i (mV)    Var(A_i)  a^2*Var(m)    Var(n_i)  % indep  coupled
+ A2V-16_A1   969.003      0.4421      0.4255      0.0166     3.8%      yes
+ A2V-16_A2  1061.246      0.5404      0.5104      0.0300     5.5%      yes
+ A2V-16_A3  1114.616      0.5729      0.5630      0.0099     1.7%      yes
+ A2V-16_A4  1075.219      0.5278      0.5239      0.0039     0.7%      yes
+
+E[RMS(m)] over 2 trial(s) = 0.0007  (fractional LED intensity fluctuation)
+
+================================================================
+INTERPRETATION
+================================================================
+Here are the variables in the model V(t) = A_i(t)cos(2πf_c t + θ),  A_i(t) = a_i + a_i·m(t) + n_i(t):
+
+Measured / raw
+    V_i(t)      — the raw load voltage of diode i (the carrier sine you actually sample), mV.
+    f_c         — carrier frequency, ~287 Hz (LED drive tone). θ is its phase.
+
+Per-diode envelope (after I/Q demod & de-rotation)
+    A_i(t)      — demodulated envelope of diode i: the slowly-varying carrier amplitude, mV. This is what all the covariance math runs on.
+    a_i         — mean carrier amplitude of diode i (the constant part of A_i), mV. Represents the average optical power reaching that diode. ~8–18 mV now.
+
+The two things we're separating
+    m(t)        — LED's fractional intensity fluctuation, dimensionless, E[m]=0. Shared by all diodes (common mode). RMS(m) ≈ 1–2% = how much the brightness wobbles relative to its mean.
+    n_i(t)      — independent per-diode in-band noise (shot/thermal + local pickup), mV. Uncorrelated across diodes. Currently pinned at the electronics floor.
+
+Computed statistics
+    Var(m)      — variance of m, dimensionless. Estimated as Cov(A_i,A_j)/(a_i·a_j).
+    RMS(m)      — √Var(m), the fractional fluctuation (0.01 = 1%). E[RMS(m)] averages it over trials.
+    Var(A_i)    — total variance of diode i's envelope, mV² (diagonal of cov_A).
+    a_i²·Var(m) — the part of Var(A_i) explained by the shared LED (common mode), mV².
+    Var(n_i)    — remainder Var(A_i) − a_i²·Var(m) = independent noise, mV².
+    cov_A       — envelope covariance matrix, mV² (Var(A_i) on diagonal, shared fluctuation off-diagonal).
+    corr_A      — envelope correlation matrix, −1…1 (near 1 = tracking the same LED).
+    norm_cov    — cov_A / (a_i·a_j); off-diagonals are the per-pair Var(m) estimate.
