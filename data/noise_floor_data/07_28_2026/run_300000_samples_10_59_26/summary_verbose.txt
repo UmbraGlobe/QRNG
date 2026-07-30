@@ -1,0 +1,25 @@
+FULL PER-BAND NOISE-FLOOR TABLE
+Fs = 5000.00 Hz  carrier = 100.000 Hz  Nyquist = 2500.0 Hz
+record = 0 samples (0.0 s)  Welch NFFT = 0  bin = 0.610 Hz
+candidate carrier-free bands = 49  (guard ±3.0 Hz from every comb line)
+'clean' = no bin > band-median + 6.0 dB;  bw_ratio = density spread across halfwidths [2, 5, 10, 20]
+
+========================================================================
+A2V-16_A1
+========================================================================
+ center Hz   density mV^2/Hz  worst dB  bw_ratio   clean
+
+========================================================================
+A2V-16_A2
+========================================================================
+ center Hz   density mV^2/Hz  worst dB  bw_ratio   clean
+
+========================================================================
+A2V-16_A3
+========================================================================
+ center Hz   density mV^2/Hz  worst dB  bw_ratio   clean
+
+========================================================================
+A2V-16_A4
+========================================================================
+ center Hz   density mV^2/Hz  worst dB  bw_ratio   clean

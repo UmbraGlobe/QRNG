@@ -5,10 +5,10 @@
 #include <SPI.h>
 
 const int CARRIER_PIN = D3;    
-const float CARRIER_FREQ_HZ = 930.0;
-const float CARRIER_DUTY = 50.0;  
+const float CARRIER_FREQ_HZ = 930.5;
+const float CARRIER_DUTY = 50;  
 const int TLC_LE = D9;
-const uint8_t LED_ENABLE = 0b00001000;
+const uint8_t LED_ENABLE = 0b00000000;
 
 PwmOut carrier(CARRIER_PIN);
 

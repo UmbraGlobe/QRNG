@@ -1,0 +1,34 @@
+======================================================================
+ DARK TEST  —  carrier-band electrical pickup (LEDs OFF)
+======================================================================
+Coherent phasor at the carrier with no light: what couples in from the carrier
+PWM / SPI / OE switching. Complex baseband (a quadrature spur is invisible to
+magnitude demod).
+Record : 300000 samples (60 s)   Fs = 5000 Hz   carrier = 100.0 Hz
+
+  sensor       pickup uV  phase deg  in-band uV
+  ---------------------------------------------
+  A2V-16_A1       877.98     -116.5      202.05
+  A2V-16_A2       865.32     -116.6      323.05
+  A2V-16_A3       872.90     -116.3      226.04
+  A2V-16_A4       892.35     -117.7      155.86
+
+Common-mode check (phasor vs A2V-16_A1):
+  A2V-16_A1   |c| =   877.98 uV   dphase =    -0.0 deg
+  A2V-16_A2   |c| =   865.32 uV   dphase =    -0.1 deg
+  A2V-16_A3   |c| =   872.90 uV   dphase =    +0.2 deg
+  A2V-16_A4   |c| =   892.35 uV   dphase =    -1.2 deg
+  aligned dphase across channels => one shared source, phase-locked to the carrier.
+
+Verdict
+  largest pickup = 892.35 uV.
+  Compare pickup uV to the ~80-210 uV noise floor: below it = buried; above = a coherent
+  line that WILL bias Var(m)/cov in the cross-sensor cell (subtract it, per analysis.md).
+
+How to read this
+  pickup uV    |c_i| = 2*mean(v*e^-jwt): deterministic carrier-band pickup amplitude.
+               Random noise averages out; only phase-locked coupling survives.
+  phase deg    arg(c_i) vs the demod LO. Compare to the LIT carrier phase (variance cell
+               de-rotation ref) to tell an in-phase pickup from a quadrature one.
+  in-band uV   incoherent fluctuation in the +/-2 Hz demod band (2*std of baseband).
+  % of carrier |c_i| relative to the lit-run a_i -- how much it perturbs that channel.
