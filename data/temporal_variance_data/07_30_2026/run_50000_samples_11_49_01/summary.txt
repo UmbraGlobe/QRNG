@@ -1,0 +1,15 @@
+A is the message encoded in the carrier wave (the total noise signal, LED FLUCTUATION + CIRCUIT NOISE + INTERFERENCE...)
+a is the mean of the demodulated message
+Var(A) is the total variance of A
+std(A) is the standard deviation of A
+std/a is the fractional fluctuation (std/mean) for each time window.
+
+Same sensor (A2V-16_A1) over 5 sequential time windows, Fs = 5000.00 Hz
+  window      a (mV)   Var(A) mV^2   std(A) mV       std/a
+      t1   2396.9204       14.5417      3.8134  1.5909e-03
+      t2   2399.6717       11.7390      3.4262  1.4278e-03
+      t3   2397.9321       12.7252      3.5672  1.4876e-03
+      t4   2401.9706       12.5893      3.5481  1.4772e-03
+      t5   2403.5805       11.5533      3.3990  1.4141e-03
+
+Var(A) across windows: E[Var(A)] = 12.6297 mV^2, std = 1.1852 mV^2, spread (CV) = 9.4%
