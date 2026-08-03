@@ -8,7 +8,12 @@ const int CARRIER_PIN = D3;
 const float CARRIER_FREQ_HZ = 930.5;
 const float CARRIER_DUTY = 50;  
 const int TLC_LE = D9;
-const uint8_t LED_ENABLE = 0b00001000;
+uint32_t LED_ENABLE = 0xFFFFFFFF;
+uint32_t BLUE_ONLY = 0x000000FF;
+uint32_t RED_ONLY = 0x0000FF00;
+uint32_t YELLOW_ONLY = 0x00FF0000;
+uint32_t GREEN_ONLY = 0xFF000000;
+
 
 PwmOut carrier(CARRIER_PIN);
 
@@ -169,16 +174,6 @@ static bool readAdcFrame(uint16_t output[4]) {
   return true;
 }
 
-void initializeSPI() {
-  SPI.begin();
-  SPI.beginTransaction(tlcSPI);
-  SPI.transfer(LED_ENABLE);
-  SPI.endTransaction();
-
-  digitalWrite(TLC_LE, HIGH);
-  delayMicroseconds(1);
-  digitalWrite(TLC_LE, LOW);
-}
 
 static void timerCallback(timer_callback_args_t* p_args) {
   fillBuf->packets[sampleIndex].timestamp = micros();
@@ -216,7 +211,21 @@ void setup() {
   pinMode(TLC_LE, OUTPUT);
   digitalWrite(TLC_LE, LOW);
 
-  initializeSPI();
+  SPI.begin();
+  SPI.beginTransaction(tlcSPI);
+  
+  LED_ENABLE = BLUE_ONLY;
+
+  SPI.transfer((LED_ENABLE >> 24) & 0xFF);
+  SPI.transfer((LED_ENABLE >> 16) & 0xFF);
+  SPI.transfer((LED_ENABLE >> 8) & 0xFF);
+  SPI.transfer((LED_ENABLE >> 0) & 0xFF);
+
+  SPI.endTransaction();
+
+  digitalWrite(TLC_LE, HIGH);
+  delayMicroseconds(1);
+  digitalWrite(TLC_LE, LOW);
 
   carrier.begin(CARRIER_FREQ_HZ, CARRIER_DUTY);
 
