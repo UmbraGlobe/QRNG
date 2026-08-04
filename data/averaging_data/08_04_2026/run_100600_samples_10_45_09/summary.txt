@@ -1,0 +1,20 @@
+LO frequency error   df = +0.0031 Hz  (large |df| -> re-run Setup / refine CARRIER_FREQ)
+100000 fingerprint read(s) x 1 samples averaged (0.000 s each), 100042 samples after settling (558 dropped, 0.112 s)
+
+
+Per-sensor drift across reads (mV) - the floor the surface fingerprint must beat:
+  A2V-16_A1 mean=976.662  std= 0.4195  CV= 0.04%
+  A2V-16_A2 mean=1059.234  std= 0.4512  CV= 0.04%
+  A2V-16_A3 mean=875.752  std= 0.4029  CV= 0.05%
+  A2V-16_A4 mean=1006.011  std= 0.3900  CV= 0.04%
+
+Pairwise ratio drift (common mode cancels in the ratio):
+  A2V-16_A1/A2V-16_A2 mean= 0.9220  std= 0.0004  CV= 0.05%
+  A2V-16_A1/A2V-16_A3 mean= 1.1152  std= 0.0007  CV= 0.06%
+  A2V-16_A1/A2V-16_A4 mean= 0.9708  std= 0.0006  CV= 0.06%
+  A2V-16_A2/A2V-16_A3 mean= 1.2095  std= 0.0006  CV= 0.05%
+  A2V-16_A2/A2V-16_A4 mean= 1.0529  std= 0.0005  CV= 0.05%
+  A2V-16_A3/A2V-16_A4 mean= 0.8705  std= 0.0003  CV= 0.03%
+
+Bit stability: 100000/100000 reads gave the bitstring 0 1 0 1 1 0
+1 distinct bitstring(s) seen (1 = perfectly reproducible)

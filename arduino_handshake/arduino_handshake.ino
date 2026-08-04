@@ -9,10 +9,10 @@ const float CARRIER_FREQ_HZ = 930.5;
 const float CARRIER_DUTY = 50;  
 const int TLC_LE = D9;
 uint32_t LED_ENABLE = 0xFFFFFFFF;
-uint32_t BLUE_ONLY = 0x000000FF;
-uint32_t RED_ONLY = 0x0000FF00;
-uint32_t YELLOW_ONLY = 0x00FF0000;
-uint32_t GREEN_ONLY = 0xFF000000;
+uint32_t BLUE_ONLY = 0x00000001;
+uint32_t RED_ONLY = 0x00000100;
+uint32_t YELLOW_ONLY = 0x00010000;
+uint32_t GREEN_ONLY = 0x01000000;
 
 
 PwmOut carrier(CARRIER_PIN);
@@ -207,7 +207,6 @@ static void timerCallback(timer_callback_args_t* p_args) {
 
 void setup() {
   Serial.begin(921600);
-  pinMode(DAC, OUTPUT);
   pinMode(TLC_LE, OUTPUT);
   digitalWrite(TLC_LE, LOW);
 
@@ -246,8 +245,6 @@ void setup() {
   fsp_timer.open();
   fsp_timer.start();
 }
-
-int count = 0;
 
 void loop() {
   if (dataReady) {
