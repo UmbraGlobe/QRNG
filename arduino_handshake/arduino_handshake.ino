@@ -5,7 +5,7 @@
 #include <SPI.h>
 
 const int CARRIER_PIN = D3;    
-const float CARRIER_FREQ_HZ = 930.5;
+const float CARRIER_FREQ_HZ = 15;
 const float CARRIER_DUTY = 50;  
 const int TLC_LE = D9;
 uint32_t LED_ENABLE = 0xFFFFFFFF;
@@ -213,7 +213,7 @@ void setup() {
   SPI.begin();
   SPI.beginTransaction(tlcSPI);
   
-  LED_ENABLE = BLUE_ONLY;
+  LED_ENABLE = BLUE_ONLY | RED_ONLY | GREEN_ONLY | YELLOW_ONLY;
 
   SPI.transfer((LED_ENABLE >> 24) & 0xFF);
   SPI.transfer((LED_ENABLE >> 16) & 0xFF);
