@@ -13,11 +13,20 @@ uint32_t BLUE_ONLY = 0x00000001;
 uint32_t RED_ONLY = 0x00000100;
 uint32_t YELLOW_ONLY = 0x00010000;
 uint32_t GREEN_ONLY = 0x01000000;
+volatile int count = 0;
+const uint32_t TDM_LEDS[4] = {
+  BLUE_ONLY,
+  RED_ONLY,
+  YELLOW_ONLY,
+  GREEN_ONLY
+};
 
+volatile uint8_t currentLED = 0;
 
 PwmOut carrier(CARRIER_PIN);
 
 FspTimer fsp_timer;
+FspTimer tdm_timer;     // LED switching timer
 
 
 volatile bool dataReady = false;
@@ -205,26 +214,33 @@ static void timerCallback(timer_callback_args_t* p_args) {
   }
 }
 
-void setup() {
-  Serial.begin(921600);
-  pinMode(TLC_LE, OUTPUT);
-  digitalWrite(TLC_LE, LOW);
+static void tdmCallback(timer_callback_args_t* p_args) {
+  count++;
+}
 
-  SPI.begin();
+void setLED(uint32_t mask) {
   SPI.beginTransaction(tlcSPI);
-  
-  LED_ENABLE = BLUE_ONLY;
-  
-  SPI.transfer((LED_ENABLE >> 24) & 0xFF);
-  SPI.transfer((LED_ENABLE >> 16) & 0xFF);
-  SPI.transfer((LED_ENABLE >> 8) & 0xFF);
-  SPI.transfer((LED_ENABLE >> 0) & 0xFF);
+
+  SPI.transfer((mask >> 24) & 0xFF);
+  SPI.transfer((mask >> 16) & 0xFF);
+  SPI.transfer((mask >> 8) & 0xFF);
+  SPI.transfer(mask & 0xFF);
 
   SPI.endTransaction();
 
   digitalWrite(TLC_LE, HIGH);
   delayMicroseconds(1);
   digitalWrite(TLC_LE, LOW);
+}
+
+void setup() {
+  Serial.begin(921600);
+  pinMode(TLC_LE, OUTPUT);
+  digitalWrite(TLC_LE, LOW);
+
+  SPI.begin();
+  currentLED = 0;
+  setLED(TDM_LEDS[currentLED]);
 
   carrier.begin(CARRIER_FREQ_HZ, CARRIER_DUTY);
 
@@ -244,11 +260,27 @@ void setup() {
   fsp_timer.setup_overflow_irq();
   fsp_timer.open();
   fsp_timer.start();
+
+  int8_t tdmChannel = FspTimer::get_available_timer(type);
+  if (tdmChannel < 0) return;
+  tdm_timer.begin(TIMER_MODE_PERIODIC, type, tdmChannel, 100, 50.0, tdmCallback, nullptr);
+
+  tdm_timer.setup_overflow_irq();
+  tdm_timer.open();
+  tdm_timer.start();
 }
 
 void loop() {
   if (dataReady) {
     Serial.write((uint8_t*)sendBuf, sizeof(DataPayload));
     dataReady = false;
+  }
+  if (count >= 100){
+    count = 0;
+    currentLED++;
+    if (currentLED >= 4){
+      currentLED = 0;
+    }
+  setLED(TDM_LEDS[currentLED]);
   }
 }
