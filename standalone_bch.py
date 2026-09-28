@@ -45,6 +45,7 @@ from __future__ import annotations
 import csv
 import os
 import random
+import textwrap
 from collections import Counter
 from array import array
 from pathlib import Path
@@ -128,12 +129,12 @@ SUMMARY_RC = {
     "font.family": "serif",
     "font.serif": SUMMARY_SERIF,
     "mathtext.fontset": "stix",
-    "font.size": 8,
-    "axes.labelsize": 8,
-    "axes.titlesize": 8,
-    "xtick.labelsize": 7,
-    "ytick.labelsize": 7,
-    "legend.fontsize": 7,
+    "font.size": 14,
+    "axes.labelsize": 14,
+    "axes.titlesize": 14,
+    "xtick.labelsize": 12,
+    "ytick.labelsize": 12,
+    "legend.fontsize": 11,
     "axes.linewidth": 0.6,
     "axes.edgecolor": "#000000",
     "axes.labelcolor": "#000000",
@@ -885,6 +886,10 @@ def _rolling_mean_centered(values, window: int):
 
 def _summary_axes_style(ax, T, grid=False, gridaxis="y"):
     """Apply the same boxed-axis styling as the publication visualization code."""
+    ylabel = ax.get_ylabel()
+    if len(ylabel) > 24 and "\n" not in ylabel:
+        ax.set_ylabel(textwrap.fill(ylabel, width=22, break_long_words=False,
+                                     break_on_hyphens=False))
     for spine in ax.spines.values():
         spine.set_visible(True)
         spine.set_linewidth(0.6)
@@ -908,7 +913,7 @@ def _summary_legend(ax, T, n=2, frame=True, **kwargs):
         borderpad=0.35,
         labelspacing=0.3,
         labelcolor=T["ink"],
-        fontsize=6.5,
+        fontsize=11,
         ncols=min(n, 2),
         handlelength=1.4,
         columnspacing=1.0,
@@ -917,6 +922,22 @@ def _summary_legend(ax, T, n=2, frame=True, **kwargs):
     if frame:
         legend.get_frame().set_linewidth(0.4)
     return legend
+
+
+def _summary_panel_title(ax, letter, title, T):
+    """Give each panel letter a little more emphasis than its title."""
+    for label, x_offset, font_size in ((f"({letter})", 0, 16), (title, 29, 14)):
+        ax.annotate(
+            label,
+            xy=(0, 1),
+            xycoords="axes fraction",
+            xytext=(x_offset, 3.5),
+            textcoords="offset points",
+            color=T["ink"],
+            fontsize=font_size,
+            ha="left",
+            va="bottom",
+        )
 
 
 def _make_summary_png(
@@ -973,7 +994,7 @@ def _make_summary_png(
     GRAY = "#BDBDBD"
 
     # Full-width vertically stacked panels, matching the reference figure style.
-    fig_height = 7.25
+    fig_height = 8.5
 
     with plt.rc_context(SUMMARY_RC):
         fig = plt.figure(
@@ -995,12 +1016,7 @@ def _make_summary_png(
         # (a) Intra-Hamming Distance Across Reads
         # =============================================================
         ax_a = fig.add_subplot(gs[0, 0])
-        ax_a.set_title(
-            "(a) Intra-Hamming Distance Across Reads",
-            color=T["ink"],
-            loc="left",
-            pad=3.5,
-        )
+        _summary_panel_title(ax_a, "a", "Intra-Hamming Distance Across Reads", T)
 
         stride = (
             int(np.ceil(total / MAX_SCATTER_POINTS))
@@ -1059,12 +1075,7 @@ def _make_summary_png(
         # (b) Bit Positions Fixed by BCH
         # =============================================================
         ax_b = fig.add_subplot(gs[1, 0])
-        ax_b.set_title(
-            "(b) Bit Positions Fixed by BCH",
-            color=T["ink"],
-            loc="left",
-            pad=3.5,
-        )
+        _summary_panel_title(ax_b, "b", "Bit Positions Fixed by BCH", T)
 
         x = np.arange(code.n)
         width = 0.37
@@ -1117,7 +1128,7 @@ def _make_summary_png(
                 f"{count:,}",
                 ha="center",
                 va="bottom",
-                fontsize=6,
+                fontsize=10,
                 color=T["ink2"],
             )
 
@@ -1125,12 +1136,7 @@ def _make_summary_png(
         # (c) Intra-Hamming Distance Distribution
         # =============================================================
         ax_c = fig.add_subplot(gs[2, 0])
-        ax_c.set_title(
-            "(c) Intra-Hamming Distance Distribution",
-            color=T["ink"],
-            loc="left",
-            pad=3.5,
-        )
+        _summary_panel_title(ax_c, "c", "Intra-Hamming Distance Distribution", T)
 
         hd_x = np.arange(code.n + 1)
         hd_colors = [GREEN if distance <= code.t else RED for distance in hd_x]
@@ -1167,7 +1173,7 @@ def _make_summary_png(
             xytext=(3, 0),
             textcoords="offset points",
             color=T["ink2"],
-            fontsize=6,
+            fontsize=10,
             ha="left",
             va="center",
         )
@@ -1181,7 +1187,7 @@ def _make_summary_png(
                 f"{pct:.2f}%\n({count:,})",
                 ha="center",
                 va="bottom",
-                fontsize=6,
+                fontsize=10,
                 color=T["ink2"],
                 linespacing=1.05,
             )
