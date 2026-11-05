@@ -1,0 +1,8 @@
+numpy
+scipy
+pandas
+matplotlib
+pyserial      # provides the "serial" module. Do not install the package named "serial".
+pyqtgraph
+padasip
+PyQt6         # or PyQt5 / PySide6; pyqtgraph needs one Qt binding for the live windows
